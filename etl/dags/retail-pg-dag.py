@@ -7,18 +7,13 @@ import pandas as pd
 import pyarrow.parquet as pq
 import pyarrow as pa
 
-# ------------------------
-# Default DAG arguments
-# ------------------------
 default_args = {
     "owner": "avishka",
     "retries": 1,
     "retry_delay": timedelta(minutes=2),
 }
 
-# ------------------------
-# DAG definition
-# ------------------------
+
 with DAG(
     dag_id="retail_etl_parquet_chunked_dag_postgres",
     default_args=default_args,
@@ -28,17 +23,17 @@ with DAG(
     catchup=False,
 ) as dag:
 
-    # ------------------------
+    
     # Extract Task
-    # ------------------------
+    
     @task
     def extract():
         """Simulate data extraction: return CSV file path"""
         return "/usr/local/airflow/include/data.csv"
 
-    # ------------------------
+    
     # Transform Task
-    # ------------------------
+  
     @task
     def transform(data_path: str):
         """Clean, filter, and store as Parquet with proper types"""
@@ -68,9 +63,9 @@ with DAG(
 
         return output_path
 
-    # ------------------------
+    
     # Load Task
-    # ------------------------
+    
     @task
     def load(data_path: str):
         """Load Parquet file into Postgres in batches with correct types"""
@@ -103,9 +98,9 @@ with DAG(
             )
             first_batch = False
 
-    # ------------------------
+    
     # DAG Dependencies
-    # ------------------------
+   
     extracted_path = extract()
     transformed_data_path = transform(extracted_path)
     load(transformed_data_path)
